@@ -121,7 +121,8 @@
     "vnetName": "splunk-vnet",
     "clusterName": "splunk-cluster",
     "resgpguid": "[substring(replace(guid(resourceGroup().id), '-', ''), 0, 4)]",
-    "installScriptUri": "[uri(parameters('_artifactsLocation'), concat('scripts/minio.sh', parameters('_artifactsLocationSasToken')))]",
+    "splunkInstallScriptUri": "[uri(parameters('_artifactsLocation'), concat('scripts/splunk.sh', parameters('_artifactsLocationSasToken')))]",
+    "minioInstallScriptUri": "[uri(parameters('_artifactsLocation'), concat('scripts/minio.sh', parameters('_artifactsLocationSasToken')))]",
     "helmValuesUri": "[uri(parameters('_artifactsLocation'), concat('scripts/values.yaml', parameters('_artifactsLocationSasToken')))]",
     "blobStorageAccountName": "[concat('minio', variables('resgpguid'))]",
     "blobStorageAccountPrivateEndpointName": "[concat('minio', variables('resgpguid'))]",
@@ -349,7 +350,7 @@
             "value": "[variables('clusterName')]"
           }
         ],
-        "primaryScriptUri": "[variables('installScriptUri')]",
+        "primaryScriptUri": "[variables('minioInstallScriptUri')]",
         "cleanupPreference": "OnExpiration",
         "retentionInterval": "P1D"
       }
@@ -410,7 +411,7 @@
             "value": "[variables('splunkDeploymentYaml')]"
           }
         ],
-        "primaryScriptUri": "[variables('installScriptUri')]",
+        "primaryScriptUri": "[variables('splunkInstallScriptUri')]",
         "cleanupPreference": "OnExpiration",
         "retentionInterval": "P1D"
       }
