@@ -6,7 +6,7 @@ mv linux-amd64/helm /usr/local/bin/helm
 # Install kubectl
 az aks install-cli
 # Get minio cluster credentials
-az aks get-credentials -g $RESOURCEGROUP -n minio-cluster
+az aks get-credentials -g $RESOURCEGROUP -n $CLUSTERNAME
 # Install minio helm chart
 helm repo add minio https://helm.min.io/
 wget -O values.yaml $HELMVALUES

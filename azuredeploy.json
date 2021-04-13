@@ -112,7 +112,8 @@
   },
   "functions": [],
   "variables": {
-    "vnetName": "minio-gateway-vnet",
+    "vnetName": "splunk-vnet",
+    "clusterName": "splunk-cluster",
     "resgpguid": "[substring(replace(guid(resourceGroup().id), '-', ''), 0, 4)]",
     "installScriptUri": "[uri(parameters('_artifactsLocation'), concat('scripts/minio.sh', parameters('_artifactsLocationSasToken')))]",
     "helmValuesUri": "[uri(parameters('_artifactsLocation'), concat('scripts/values.yaml', parameters('_artifactsLocationSasToken')))]",
@@ -292,7 +293,7 @@
       "name": "[variables('aksRoleAssignmentId')]",
       "properties": {
         "roleDefinitionId": "[variables('aksRoleDefinitionId')]",
-        "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', 'minio-cluster'), '2020-11-01', 'Full').identity.principalId]",
+        "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName')), '2020-11-01', 'Full').identity.principalId]",
         "scope": "[resourceGroup().id]",
         "principalType": "ServicePrincipal"
       }
@@ -306,7 +307,7 @@
       "dependsOn": [
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('dsIdentityName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('blobStorageAccountName'))]",
-        "[resourceId('Microsoft.ContainerService/managedClusters', 'minio-cluster')]"
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]"
       ],
       "identity": {
         "type": "UserAssigned",
@@ -334,6 +335,10 @@
           {
             "name": "HELMVALUES",
             "value": "[variables('helmValuesUri')]"
+          },
+          {
+            "name": "CLUSTERNAME",
+            "value": "[variables('clusterName')]"
           }
         ],
         "primaryScriptUri": "[variables('installScriptUri')]",
@@ -342,7 +347,7 @@
       }
     },
     {
-      "name": "minio-cluster",
+      "name": "[variables('clusterName')]",
       "type": "Microsoft.ContainerService/managedClusters",
       "apiVersion": "2020-11-01",
       "location": "[parameters('location')]",
