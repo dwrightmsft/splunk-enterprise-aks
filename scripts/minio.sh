@@ -10,11 +10,11 @@ az aks get-credentials -g $RESOURCEGROUP -n $CLUSTERNAME
 # Install minio helm chart
 helm repo add minio https://helm.min.io/
 wget -O values.yaml $HELMVALUES
-helm upgrade --install --wait minio minio/minio --set azuregateway.enabled=true --set accessKey=$STORAGEACCOUNTNAME --set secretKey=$STORAGEACCOUNTKEY --set service.type=LoadBalancer --values values.yaml
+helm upgrade --install --wait minio minio/minio --namespace minio --create-namespace --set azuregateway.enabled=true --set accessKey=$STORAGEACCOUNTNAME --set secretKey=$STORAGEACCOUNTKEY --set service.type=LoadBalancer --values values.yaml
 # Get load balancer IP, once available
-until [ $(kubectl get service minio -o=jsonpath='{...ip}') != "" ]; do sleep 15; done
-serviceIp=$(kubectl get service minio -o=jsonpath='{...ip}')
+until [ $(kubectl get service --namespace minio -o=jsonpath='{...ip}') != "" ]; do sleep 15; done
+serviceIp=$(kubectl get service --namespace minio -o=jsonpath='{...ip}')
 #Configure Pod Autoscaler
-kubectl autoscale deployment minio --cpu-percent=60 --min=3 --max=50
+kubectl autoscale deployment --namespace minio minio --cpu-percent=60 --min=3 --max=50
 # Create output for S3 endpoint IP 
 echo \{\"loadBalancerIP\":\"$serviceIp\"\} > $AZ_SCRIPTS_OUTPUT_PATH

@@ -108,6 +108,12 @@
     "utcValue": {
       "type": "string",
       "defaultValue": "[utcNow()]"
+    },
+    "licenseFile": {
+      "type": "string",
+      "metadata": {
+        "description": "Splunk Enterprise license file"
+      }
     }
   },
   "functions": [],
@@ -339,6 +345,59 @@
           {
             "name": "CLUSTERNAME",
             "value": "[variables('clusterName')]"
+          }
+        ],
+        "primaryScriptUri": "[variables('installScriptUri')]",
+        "cleanupPreference": "OnExpiration",
+        "retentionInterval": "P1D"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "name": "splunk",
+      "apiVersion": "2019-10-01-preview",
+      "location": "[parameters('location')]",
+      "kind": "AzureCLI",
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('dsIdentityName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('blobStorageAccountName'))]",
+        "[resourceId('Microsoft.ContainerService/managedClusters', variables('clusterName'))]",
+        "[resourceId('Microsoft.Resources/deploymentScripts', 'minio')]"
+      ],
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities', 'dsId')]": {}
+        }
+      },
+      "properties": {
+        "forceUpdateTag": "[parameters('utcValue')]",
+        "AzCliVersion": "2.10.1",
+        "timeout": "PT30M",
+        "environmentVariables": [
+          {
+            "name": "RESOURCEGROUP",
+            "secureValue": "[resourceGroup().name]"
+          },
+          {
+            "name": "STORAGEACCOUNTNAME",
+            "value": "[variables('blobStorageAccountName')]"
+          },
+          {
+            "name": "STORAGEACCOUNTKEY",
+            "secureValue": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('blobStorageAccountName')), '2019-06-01').keys[0].value]"
+          },
+          {
+            "name": "HELMVALUES",
+            "value": "[variables('helmValuesUri')]"
+          },
+          {
+            "name": "CLUSTERNAME",
+            "value": "[variables('clusterName')]"
+          },
+          {
+            "name": "LICENSEFILE",
+            "secureValue": "[parameters('licenseFile')]"
           }
         ],
         "primaryScriptUri": "[variables('installScriptUri')]",
