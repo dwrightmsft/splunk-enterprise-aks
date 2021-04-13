@@ -375,7 +375,7 @@
       "properties": {
         "forceUpdateTag": "[parameters('utcValue')]",
         "AzCliVersion": "2.10.1",
-        "timeout": "PT30M",
+        "timeout": "PT60M",
         "environmentVariables": [
           {
             "name": "RESOURCEGROUP",
