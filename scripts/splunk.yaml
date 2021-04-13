@@ -1,6 +1,5 @@
 apiVersion: enterprise.splunk.com/v1
 kind: ClusterMaster
-namespace: splunk
 metadata:
   name: cm
   finalizers:
@@ -8,7 +7,6 @@ metadata:
 ---
 apiVersion: enterprise.splunk.com/v1
 kind: IndexerCluster
-namespace: splunk
 metadata:
   name: indexer
   finalizers:
@@ -19,7 +17,6 @@ spec:
 ---
 apiVersion: enterprise.splunk.com/v1
 kind: SearchHeadCluster
-namespace: splunk
 metadata:
   name: search
   finalizers:
@@ -30,7 +27,6 @@ spec:
 ---
 apiVersion: enterprise.splunk.com/v1
 kind: LicenseMaster
-namespace: splunk
 metadata:
   name: lm
   finalizers:
