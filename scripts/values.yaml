@@ -3,3 +3,6 @@ service:
   annotations: {
       service.beta.kubernetes.io/azure-load-balancer-internal: "true"
   }
+nodeSelector: {
+  agentpool: minio
+}

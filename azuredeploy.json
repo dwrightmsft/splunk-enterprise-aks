@@ -10,7 +10,7 @@
       }
     },
     "virtualNetworkAddressPrefix": {
-      "defaultValue": ["10.0.0.0/16"],
+      "defaultValue": [ "10.0.0.0/16" ],
       "type": "array",
       "metadata": {
         "description": "VNET address space."
@@ -23,35 +23,56 @@
         "description": "Subnet address space."
       }
     },
-    "agentPoolVmSku": {
+    "minioVmSku": {
       "type": "string",
       "defaultValue": "Standard_D16s_v3",
       "metadata": {
         "description": "VM SKU for AKS user node pool"
       }
     },
-    "maxpods": {
-      "type": "int",
-      "defaultValue": 20,
-      "metadata": {
-        "description": "AKS max pods per node"
-      }
-    },
-    "nodecount": {
+    "minioNodecount": {
       "type": "int",
       "defaultValue": 4,
       "metadata": {
         "description": "Initial node count for AKS user node pool"
       }
     },
-    "mincount": {
+    "minioMinCount": {
       "type": "int",
       "defaultValue": 4,
       "metadata": {
         "description": "Min count for AKS user node pool autoscaling"
       }
     },
-    "maxcount": {
+    "minioMaxCount": {
+      "type": "int",
+      "defaultValue": 50,
+      "metadata": {
+        "description": "Max count for AKS user node pool autoscaling"
+      }
+    },
+    "splunkVmSku": {
+      "type": "string",
+      "defaultValue": "Standard_D16s_v3",
+      "metadata": {
+        "description": "VM SKU for AKS user node pool"
+      }
+    },
+    "splunkNodecount": {
+      "type": "int",
+      "defaultValue": 4,
+      "metadata": {
+        "description": "Initial node count for AKS user node pool"
+      }
+    },
+    "splunkMinCount": {
+      "type": "int",
+      "defaultValue": 4,
+      "metadata": {
+        "description": "Min count for AKS user node pool autoscaling"
+      }
+    },
+    "splunkMaxCount": {
       "type": "int",
       "defaultValue": 50,
       "metadata": {
@@ -75,7 +96,7 @@
       "metadata": {
         "description": "The base URI where artifacts required by this template are located"
       },
-      "defaultValue": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/minio-azure-gateway/"
+      "defaultValue": "https://raw.githubusercontent.com/dwrightmsft/splunk-enterprise-aks/main/"
     },
     "_artifactsLocationSasToken": {
       "type": "securestring",
@@ -108,7 +129,9 @@
     "dsRoleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
     "aksRoleAssignmentId": "[guid(resourceGroup().id, variables('aksRoleDefinitionId'), resourceId('Microsoft.ManagedIdentity/identities', 'aks'))]",
     "aksRoleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4d97b98b-1d4f-4787-a291-c67834d212e7')]",
-    "dsIdentityName": "dsId"
+    "dsIdentityName": "dsId",
+    "minioMaxPods": 20,
+    "splunkMaxPods": 20
   },
   "resources": [
     {
@@ -347,23 +370,42 @@
             "osDiskSizeGB": 80,
             "mode": "System",
             "type": "VirtualMachineScaleSets",
-            "availabilityZones": ["1", "2", "3"],
-            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'default')]"
+            "availabilityZones": [ "1", "2", "3" ],
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'default')]",
+            "nodeTaints": [
+              "CriticalAddonsOnly=true:NoSchedule"
+            ]
           },
           {
-            "name": "user",
-            "count": "[parameters('nodecount')]",
-            "vmSize": "[parameters('agentPoolVmSku')]",
+            "name": "minio",
+            "count": "[parameters('minioNodecount')]",
+            "vmSize": "[parameters('minioVmSku')]",
             "osType": "Linux",
             "osDiskType": "Ephemeral",
-            "maxPods": "[parameters('maxpods')]",
+            "maxPods": "[variables('minioMaxpods')]",
             "scaleSetPriority": "Regular",
             "mode": "User",
             "type": "VirtualMachineScaleSets",
             "enableAutoScaling": true,
-            "minCount": "[parameters('mincount')]",
-            "maxCount": "[parameters('maxcount')]",
-            "availabilityZones": ["1", "2", "3"],
+            "minCount": "[parameters('minioMinCount')]",
+            "maxCount": "[parameters('minioMaxCount')]",
+            "availabilityZones": [ "1", "2", "3" ],
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'default')]"
+          },
+          {
+            "name": "splunk",
+            "count": "[parameters('splunkNodecount')]",
+            "vmSize": "[parameters('splunkVmSku')]",
+            "osType": "Linux",
+            "osDiskType": "Ephemeral",
+            "maxPods": "[variables('splunkMaxpods')]",
+            "scaleSetPriority": "Regular",
+            "mode": "User",
+            "type": "VirtualMachineScaleSets",
+            "enableAutoScaling": true,
+            "minCount": "[parameters('splunkMinCount')]",
+            "maxCount": "[parameters('splunkMaxCount')]",
+            "availabilityZones": [ "1", "2", "3" ],
             "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'default')]"
           }
         ],
