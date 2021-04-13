@@ -7,6 +7,7 @@ az aks get-credentials -g $RESOURCEGROUP -n $CLUSTERNAME
 echo $LICENSEFILE
 which base64
 echo $LICENSEFILE | base64 -di > /tmp/Splunk.License
+cat /tmp/Splunk.License
 # Add license to configmap
 kubectl create configmap splunk-licenses --from-file=/tmp/Splunk.License
 # Install Splunk Operator
