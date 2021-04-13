@@ -11,5 +11,6 @@ echo $LICENSEFILE | base64 -di > Splunk.License
 kubectl create configmap splunk-licenses --from-file=Splunk.License
 # Install Splunk Operator
 kubectl apply -f $SPLUNKOPERATORURL
+kubectl wait --for condition="established" crd --all
 # Install Splunk
 kubectl apply -f $SPLUNKDEPLOYMENTYAML
