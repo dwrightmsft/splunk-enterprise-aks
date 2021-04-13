@@ -138,7 +138,9 @@
     "aksRoleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4d97b98b-1d4f-4787-a291-c67834d212e7')]",
     "dsIdentityName": "dsId",
     "minioMaxPods": 20,
-    "splunkMaxPods": 20
+    "splunkMaxPods": 20,
+    "splunkOperatorUrl": "https://github.com/splunk/splunk-operator/releases/download/1.0.0-RC/splunk-operator-install.yaml",
+    "splunkDeploymentYaml": "[concat(parameters('_artifactsLocation'), 'scripts/splunk.yaml')]"
   },
   "resources": [
     {
@@ -398,6 +400,14 @@
           {
             "name": "LICENSEFILE",
             "secureValue": "[parameters('licenseFile')]"
+          },
+          {
+            "name": "SPLUNKOPERATORURL",
+            "value": "[variables('splunkOperatorUrl')]"
+          },
+          {
+            "name": "SPLUNKDEPLOYMENTYAML",
+            "value": "[variables('splunkDeploymentYaml')]"
           }
         ],
         "primaryScriptUri": "[variables('installScriptUri')]",

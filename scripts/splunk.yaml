@@ -1,0 +1,43 @@
+apiVersion: enterprise.splunk.com/v1
+kind: ClusterMaster
+namespace: splunk
+metadata:
+  name: cm
+  finalizers:
+  - enterprise.splunk.com/delete-pvc
+---
+apiVersion: enterprise.splunk.com/v1
+kind: IndexerCluster
+namespace: splunk
+metadata:
+  name: indexer
+  finalizers:
+  - enterprise.splunk.com/delete-pvc
+spec:
+  clusterMasterRef:
+    name: cm
+---
+apiVersion: enterprise.splunk.com/v1
+kind: SearchHeadCluster
+namespace: splunk
+metadata:
+  name: search
+  finalizers:
+  - enterprise.splunk.com/delete-pvc
+spec:
+  clusterMasterRef:
+    name: cm
+---
+apiVersion: enterprise.splunk.com/v1
+kind: LicenseMaster
+namespace: splunk
+metadata:
+  name: lm
+  finalizers:
+  - enterprise.splunk.com/delete-pvc
+spec:
+  volumes:
+    - name: licenses
+      configMap:
+        name: splunk-licenses
+  licenseUrl: /mnt/licenses/Splunk.License
