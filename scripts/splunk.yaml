@@ -1,34 +1,71 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: splunk
+---
 apiVersion: enterprise.splunk.com/v1
 kind: ClusterMaster
 metadata:
   name: cm
+  namespace: splunk
   finalizers:
   - enterprise.splunk.com/delete-pvc
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: agentpool
+            operator: In
+            values:
+            - splunk
 ---
 apiVersion: enterprise.splunk.com/v1
 kind: IndexerCluster
 metadata:
   name: indexer
+  namespace: splunk
   finalizers:
   - enterprise.splunk.com/delete-pvc
 spec:
   clusterMasterRef:
     name: cm
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: agentpool
+            operator: In
+            values:
+            - splunk
 ---
 apiVersion: enterprise.splunk.com/v1
 kind: SearchHeadCluster
 metadata:
   name: search
+  namespace: splunk
   finalizers:
   - enterprise.splunk.com/delete-pvc
 spec:
   clusterMasterRef:
     name: cm
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: agentpool
+            operator: In
+            values:
+            - splunk
 ---
 apiVersion: enterprise.splunk.com/v1
 kind: LicenseMaster
 metadata:
   name: lm
+  namespace: splunk
   finalizers:
   - enterprise.splunk.com/delete-pvc
 spec:
@@ -37,3 +74,12 @@ spec:
       configMap:
         name: splunk-licenses
   licenseUrl: /mnt/licenses/Splunk.License
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: agentpool
+            operator: In
+            values:
+            - splunk
