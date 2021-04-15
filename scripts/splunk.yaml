@@ -11,6 +11,8 @@ metadata:
   finalizers:
   - enterprise.splunk.com/delete-pvc
 spec:
+  licenseMasterRef:
+    name: lm
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -69,6 +71,8 @@ metadata:
   finalizers:
   - enterprise.splunk.com/delete-pvc
 spec:
+  clusterMasterRef:
+    name: cm
   volumes:
     - name: licenses
       configMap:
