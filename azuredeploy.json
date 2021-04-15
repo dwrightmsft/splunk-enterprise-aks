@@ -140,7 +140,7 @@
     "dsIdentityName": "dsId",
     "minioMaxPods": 20,
     "splunkMaxPods": 20,
-    "splunkOperatorUrl": "https://github.com/splunk/splunk-operator/releases/download/1.0.0-RC/splunk-operator-install.yaml",
+    "splunkOperatorUrl": "https://github.com/splunk/splunk-operator/releases/download/1.0.0-RC/splunk-operator-cluster.yaml",
     "splunkDeploymentYaml": "[concat(parameters('_artifactsLocation'), 'scripts/splunk.yaml')]"
   },
   "resources": [
